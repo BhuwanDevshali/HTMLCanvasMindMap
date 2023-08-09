@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mind Map</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        #canvas {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <select id="dropdown">
+        <option value="">Select a node</option>
+        <option value="Bhuwan">Bhuwan</option>
+        <option value="Revanth">Revanth</option>
+        <option value="Mahima">Mahima</option>
+    </select>
+    <canvas id="canvas"></canvas>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <script>
+        var data = [
+            {
+                name: "Bhuwan",
+                id: 4,
+                linkedTo: [
+                    {
+                        friendId: 1,
+                        friendName: "Prankur",
+                        as: "Gossip friends",
+                        message: "You are my friend"
+                    },
+                    {
+                        friendId: 2,
+                        friendName: "Revanth",
+                        as: "Lunch friends",
+                        message: "You are my friend"
+                    },
+                    {
+                        friendId: 3,
+                        friendName: "Mahima",
+                        as: "Mentor-mentee pals",
+                        message: "You are my friend"
+                    }
+                ]
+            },
+            {
+                name: "Revanth",
+                id: 2,
+                linkedTo: [
+                    {
+                        friendId: 1,
+                        friendName: "Prankur",
+                        as: "Gossip friends",
+                        message: "You are my friend"
+                    },
+                    {
+                        friendId: 4,
+                        friendName: "Bhuwan",
+                        as: "Lunch friends",
+                        message: "You are also my friend"
+                    },
+                    {
+                        friendId: 3,
+                        friendName: "Mahima",
+                        as: "Mentor-mentee pals",
+                        message: "You are my friend"
+                    }
+                ]
+            },
+            {
+                name: "Mahima",
+                id: 3,
+                linkedTo: [
+                    {
+                        friendId: 5,
+                        friendName: "Ravish",
+                        as: "Gossip friends",
+                        message: "You are my friend"
+                    },
+                    {
+                        friendId: 6,
+                        friendName: "Kumar",
+                        as: "Lunch friends",
+                        message: "You are also my friend"
+                    },
+                    {
+                        friendId: 7,
+                        friendName: "Narendra",
+                        as: "Mentor-mentee pals",
+                        message: "You are my friend"
+                    }
+                ]
+            }
+        ];
+
+        var canvas = document.getElementById("canvas");
+        var context = canvas.getContext("2d");
+
+        function drawNode(node) {
+            context.beginPath();
+            context.arc(node.x, node.y, 20, 0, 2 * Math.PI);
+            context.fillStyle = "lightblue";
+            context.fill();
+            context.lineWidth = 2;
+            context.strokeStyle = "black";
+            context.stroke();
+
+            context.font = "12px Arial";
+            context.fillStyle = "black";
+            context.textAlign = "center";
+            context.fillText(node.name, node.x, node.y + 5);
+        }
+
+        function drawLink(source, target) {
+            context.beginPath();
+            context.moveTo(source.x, source.y);
+            context.lineTo(target.x, target.y);
+            context.strokeStyle = "black";
+            context.stroke();
+        }
+
+        function drawMindMap(selectedNode) {
+            context.clearRect(0, 0, canvas.width, canvas.height);
+
+            var nodes = [];
+            var links = [];
+
+            function traverse(node, parentX, parentY) {
+                var x = parentX + 100;
+                var y = parentY + 100;
+
+                node.x = x;
+                node.y = y;
+
+                nodes.push(node);
+
+                if (node.linkedTo) {
+                    node.linkedTo.forEach(function (linkedNode) {
+                        var childNode = data.find(function (n) {
+                            return n.name === linkedNode.friendName;
+                        });
+
+                        if (childNode) {
+                            links.push({ source: node, target: childNode });
+                            traverse(childNode, x, y);
+                        }
+                    });
+                }
+            }
+
+            traverse(selectedNode, 0, 0);
+
+            links.forEach(function (link) {
+                drawLink(link.source, link.target);
+            });
+
+            nodes.forEach(function (node) {
+                drawNode(node);
+            });
+        }
+
+        var dropdown = document.getElementById("dropdown");
+        dropdown.addEventListener("change", function () {
+            var selectedNode = data.find(function (node) {
+                return node.name === dropdown.value;
+            });
+
+            if (selectedNode) {
+                drawMindMap(selectedNode);
+            }
+        });
+    </script>
+</body>
+</html>
