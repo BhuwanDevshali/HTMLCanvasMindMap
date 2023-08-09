@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mind Map</title>
+    <style>
+        #mindMapCanvas {
+            width: 100%;
+            height: 100vh;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <label for="nodeDropdown">Select a Node:</label>
+        <select id="nodeDropdown"></select>
+    </div>
+    <canvas id="mindMapCanvas"></canvas>
+
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <script>
+        var data = [
+            {
+                name: "Bhuwan",
+                id: 4,
+                linkedTo: [
+                    {
+                        friendId: 1,
+                        friendName: "Prankur",
+                        as: "Gossip friends",
+                        message: "You are my friend"
+                    },
+                    {
+                        friendId: 2,
+                        friendName: "Revanth",
+                        as: "Lunch friends",
+                        message: "You are my friend"
+                    },
+                    {
+                        friendId: 3,
+                        friendName: "Mahima",
+                        as: "Mentor-mentee pals",
+                        message: "You are my friend"
+                    }
+                ]
+            },
+            {
+                name: "Revanth",
+                id: 2,
+                linkedTo: [
+                    {
+                        friendId: 1,
+                        friendName: "Prankur",
+                        as: "Gossip friends",
+                        message: "You are my friend"
+                    },
+                    {
+                        friendId: 4,
+                        friendName: "Bhuwan",
+                        as: "Lunch friends",
+                        message: "You are also my friend"
+                    },
+                    {
+                        friendId: 3,
+                        friendName: "Mahima",
+                        as: "Mentor-mentee pals",
+                        message: "You are my friend"
+                    }
+                ]
+            },
+            {
+                name: "Mahima",
+                id: 3,
+                linkedTo: [
+                    {
+                        friendId: 5,
+                        friendName: "Ravish",
+                        as: "Gossip friends",
+                        message: "You are my friend"
+                    },
+                    {
+                        friendId: 6,
+                        friendName: "Kumar",
+                        as: "Lunch friends",
+                        message: "You are also my friend"
+                    },
+                    {
+                        friendId: 7,
+                        friendName: "Narendra",
+                        as: "Mentor-mentee pals",
+                        message: "You are my friend"
+                    }
+                ]
+            }
+        ];
+
+        var dropdown = document.getElementById("nodeDropdown");
+        var canvas = document.getElementById("mindMapCanvas");
+        var ctx = canvas.getContext("2d");
+
+        function drawMindMap(node) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.font = "16px Arial";
+            ctx.textAlign = "center";
+            ctx.fillText(node.name, canvas.width / 2, canvas.height / 2);
+
+            if (node.linkedTo) {
+                node.linkedTo.forEach(function (linkedNode) {
+                    ctx.beginPath();
+                    ctx.moveTo(canvas.width / 2, canvas.height / 2);
+                    ctx.lineTo(canvas.width / 2 + 100, canvas.height / 2 + 100);
+                    ctx.stroke();
+
+                    ctx.fillText(linkedNode.friendName, canvas.width / 2 + 100, canvas.height / 2 + 100);
+                });
+            }
+        }
+
+        function populateDropdown() {
+            data.forEach(function (node) {
+                var option = document.createElement("option");
+                option.value = node.id;
+                option.text = node.name;
+                dropdown.appendChild(option);
+            });
+        }
+
+        function showChildNodes() {
+            var selectedNodeId = parseInt(dropdown.value);
+            var selectedNode = data.find(function (node) {
+                return node.id === selectedNodeId;
+            });
+
+            if (selectedNode) {
+                drawMindMap(selectedNode);
+            }
+        }
+
+        dropdown.addEventListener("change", showChildNodes);
+
+        populateDropdown();
+        showChildNodes();
+    </script>
+</body>
+</html>
